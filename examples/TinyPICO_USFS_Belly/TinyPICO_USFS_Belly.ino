@@ -15,12 +15,14 @@
 
 #include <RoboFirmwareToolkit.hpp>
 #include <rft_motors/mock.hpp>
+#include <rft_boards/realboards/arduino.hpp>
 
 #include "hackflight.hpp"
 #include "boards/tinypico_belly.hpp"
 #include "mixers/quadxcf.hpp"
 #include "pidcontrollers/rate.hpp"
 #include "pidcontrollers/level.hpp"
+#include "pidcontrollers/yaw.hpp"
 #include "sensors/usfs.hpp"
 
 #include "receivers/dsmx/dsmx_esp32_serial1.hpp"
@@ -47,7 +49,8 @@ hf::TinyPicoBelly board;
 
 static hf::UsfsGyro gyro;
 static hf::UsfsQuat quat;
-static hf::RatePid ratePid = hf::RatePid( 0.05f, 0.00f, 0.00f, 0.10f, 0.01f); 
+static hf::RatePid ratePid = hf::RatePid(0.05f, 0.00f, 0.00f); 
+static hf::YawPid yawPid = hf::YawPid(0.10f, 0.01f); 
 static hf::LevelPid levelPid = hf::LevelPid(0.20f);
 static hf::MixerQuadXCF mixer(&motors);
 
@@ -55,6 +58,9 @@ static hf::Hackflight h(&board, &receiver, &mixer);
 
 void setup(void)
 {
+    // Use pins 18,19 for power/ground
+    rft::ArduinoBoard::powerPins(18, 19);
+
     // Add gyro, quaternion sensors
     h.addSensor(&gyro);
     h.addSensor(&quat);
@@ -62,6 +68,7 @@ void setup(void)
     // Add PID controllers
     h.addClosedLoopController(&levelPid);
     h.addClosedLoopController(&ratePid);
+    h.addClosedLoopController(&yawPid);
 
     // Initialize Hackflight firmware
     h.begin();

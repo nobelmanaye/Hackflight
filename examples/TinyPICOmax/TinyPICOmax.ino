@@ -60,7 +60,7 @@ void setup(void)
     h.addSensor(&gyro);
 
     // Add PID controllers
-    h.addClosedLoopController(&levelPid);
+    //h.addClosedLoopController(&levelPid);
     h.addClosedLoopController(&yawPid);
     h.addClosedLoopController(&ratePid);
 

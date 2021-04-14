@@ -54,6 +54,17 @@ namespace hf {
                 _motorsPrev[index] = value;
             }
 
+            static void debug(float * demands)
+            {
+                static uint32_t start;
+                uint32_t time = millis();
+                if (time-start > 100) {
+                    rft::Debugger::printf("%3.3f   %+3.3f   %+3.3f    %+3.3f\n",
+                            demands[0], demands[1], demands[2], demands[3]);
+                    start = time;
+                }
+            }
+
         protected:
 
             rft::Motor * _motors;
@@ -113,6 +124,8 @@ namespace hf {
             {
                 // Map throttle demand from [-1,+1] to [0,1]
                 demands[DEMANDS_THROTTLE] = (demands[DEMANDS_THROTTLE] + 1) / 2;
+
+                // debug(demands);
 
                 float motorvals[MAXMOTORS];
 
