@@ -6,51 +6,78 @@
    MIT License
  */
 
-#include <SBUS.h>
 #include <DSMRX.h>
-
-static const uint8_t CHANNELS_IN  = 8;
-static const uint8_t CHANNELS_OUT = 16;
-
-SBUS sbus = SBUS(Serial1);
+#include <SBUS.h>
 
 DSM2048 rx;
 
-void serialEvent2(void)
+SBUS sbus = SBUS(Serial2);
+
+static float val;
+static int8_t dir;
+
+
+void serialEvent1(void)
 {
-    while (Serial2.available()) {
-        rx.handleSerialEvent(Serial2.read(), micros());
+    while (Serial1.available()) {
+        rx.handleSerialEvent(Serial1.read(), micros());
     }
 }
 
 void setup(void)
 {
+    val = -1;
+    dir = +1;
+
+    Serial1.begin(115000);
+
     sbus.begin();
-
-    // For DSMX in
-    Serial2.begin(115000);
-
-    // For debugging
-    Serial.begin(115000);
 }
 
 void loop(void)
 {
-    float invals[CHANNELS_IN] = {0};
+    static float outvals[16] = {};
 
-    rx.getChannelValuesNormalized(invals, CHANNELS_IN);
+    if (rx.timedOut(micros())) {
+        Serial.println("*** TIMED OUT ***");
+    }
 
-    static float outvals[CHANNELS_OUT];
+    else if (rx.gotNewFrame()) {
 
-    outvals[0] = invals[0]; // Throttle
-    outvals[1] = invals[1]; // Roll
-    outvals[2] = invals[2]; // Pitch
-    outvals[3] = invals[3]; // Yaw
+        float values[8];
 
-    outvals[5] = invals[6]; // DSXM Aux1 => SBUS Aux2
+        rx.getChannelValuesNormalized(values, 8);
+
+        for (int k=0; k<4; ++k) {
+            outvals[k] = values[k];
+            Serial.print("Ch. ");
+            Serial.print(k+1);
+            Serial.print(": ");
+            Serial.print(values[k]);
+            Serial.print("    ");
+        }
+
+        Serial.println();
+
+    }
+
+    // outvals[3] = val;
 
     sbus.writeCal(outvals);
 
+/*
+
+    val += dir * .005;
+
+    if (val >= +1) {
+        dir = -1;
+    }
+
+    if (val <= -1) {
+        dir = +1;
+    }
+
     delay(10);
+    */
 }
 
