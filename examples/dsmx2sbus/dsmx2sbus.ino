@@ -13,10 +13,6 @@ DSM2048 rx;
 
 SBUS sbus = SBUS(Serial2);
 
-static float val;
-static int8_t dir;
-
-
 void serialEvent1(void)
 {
     while (Serial1.available()) {
@@ -26,9 +22,6 @@ void serialEvent1(void)
 
 void setup(void)
 {
-    val = -1;
-    dir = +1;
-
     Serial1.begin(115000);
 
     sbus.begin();
@@ -61,23 +54,6 @@ void loop(void)
 
     }
 
-    // outvals[3] = val;
-
     sbus.writeCal(outvals);
-
-/*
-
-    val += dir * .005;
-
-    if (val >= +1) {
-        dir = -1;
-    }
-
-    if (val <= -1) {
-        dir = +1;
-    }
-
-    delay(10);
-    */
 }
 
