@@ -13,6 +13,8 @@
 #include <RFT_serialtask.hpp>
 #include <RFT_parser.hpp>
 
+#include "mixer.hpp"
+
 namespace hf {
 
 

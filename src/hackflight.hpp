@@ -13,9 +13,9 @@
 #include <RFT_board.hpp>
 #include <RFT_openloop.hpp>
 #include <RFT_closedloop.hpp>
+#include <RFT_actuator.hpp>
 
 #include "receiver.hpp"
-#include "mixer.hpp"
 #include "state.hpp"
 #include "serialtask.hpp"
 
@@ -40,8 +40,8 @@ namespace hf {
 
          public:
 
-            Hackflight(rft::Board * board, Receiver * receiver, Mixer * mixer) 
-                : rft::RFT(board, receiver, mixer)
+            Hackflight(rft::Board * board, Receiver * receiver, rft::Actuator * actuator) 
+                : rft::RFT(board, receiver, actuator)
             {
             }
 

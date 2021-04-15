@@ -25,13 +25,15 @@
 #include "mixers/quadxcf.hpp"
 #include "pidcontrollers/rate.hpp"
 #include "pidcontrollers/level.hpp"
+#include "pidcontrollers/yaw.hpp"
 
 static constexpr uint8_t CHANNEL_MAP[6] = {0, 1, 2, 3, 6, 4};
 static constexpr float DEMAND_SCALE = 8.58f;
 
 static hf::LadybugFC board;
 
-static hf::RatePid ratePid = hf::RatePid( 0.05f, 0.00f, 0.00f, 0.10f, 0.01f); 
+static hf::RatePid ratePid = hf::RatePid(0.05f, 0.00f, 0.00f); 
+static hf::YawPid yawPid = hf::YawPid(0.10f, 0.01f); 
 static hf::LevelPid levelPid = hf::LevelPid(0.20f);
 static hf::DSMX_Receiver_Serial1 receiver = hf::DSMX_Receiver_Serial1(CHANNEL_MAP, DEMAND_SCALE);  
 static hf::MixerQuadXCF mixer(&board.motors);
@@ -47,6 +49,7 @@ void setup(void)
     // Add PID controllers
     h.addClosedLoopController(&levelPid);
     h.addClosedLoopController(&ratePid);
+    h.addClosedLoopController(&yawPid);
 
     // Initialize Hackflight firmware
     h.begin();
